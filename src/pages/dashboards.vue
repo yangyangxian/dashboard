@@ -1,28 +1,31 @@
 <template>
-  <v-layout class="rounded rounded-md border h-screen">
-    <v-navigation-drawer width="200">
+  <v-layout class="rounded rounded-md border layout">
+    <v-navigation-drawer id="navigation-drawer" width="200">
       <v-list nav v-model="selectedItem">
         <v-list-item
-          title="To do reminder"
-          value="todo-reminder"
+          value="/dashboards/todo-reminder"
           active-class="bg-primary"
-          :active="selectedItem === 'todo-reminder'"
-          @click="activeComponent = TodoReminder; selectedItem = 'todo-reminder'"
-        ></v-list-item>
+          :active="selectedItem === '/dashboards/todo-reminder'"
+          to="/dashboards/todo-reminder"
+        >
+          <v-list-item-title class="navigation-item-title">To do reminder</v-list-item-title>
+        </v-list-item>
         <v-list-item
-          title="Portal One"
-          value="portal-one"
+          value="/dashboards/portal-one"
           active-class="bg-primary"
-          :active="selectedItem === 'portal-one'"
-          @click="activeComponent = PortalOne; selectedItem = 'portal-one'"
-        ></v-list-item>
+          :active="selectedItem === '/dashboards/portal-one'"
+          to="/dashboards/portal-one"
+        >
+          <v-list-item-title class="navigation-item-title">Portal One</v-list-item-title>
+        </v-list-item>
         <v-list-item
-          title="Dashboard"
-          value="dashboard-page"
+          value="/dashboards/dashboard-page"
           active-class="bg-primary"
-          :active="selectedItem === 'dashboard-page'"
-          @click="activeComponent = DashboardPage; selectedItem = 'dashboard-page'"
-        ></v-list-item>
+          :active="selectedItem === '/dashboards/dashboard-page'"
+          to="/dashboards/dashboard-page"
+        >
+          <v-list-item-title class="navigation-item-title">Dashboard</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -37,22 +40,23 @@
 
     <v-main class="d-flex justify-center">
       <v-container>
-        <component :is="activeComponent" />
+        <router-view />
       </v-container>
     </v-main>
   </v-layout>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, watchEffect } from 'vue'
+  import { useRoute } from 'vue-router'
   import { useTheme } from 'vuetify'
 
-  import DashboardPage from './dashboard-page.vue'
-  import PortalOne from './portal-one.vue'
-  import TodoReminder from './todo-reminder.vue'
+  const route = useRoute()
+  const selectedItem = ref(route.path)
 
-  const activeComponent = ref(TodoReminder)
-  const selectedItem = ref('todo-reminder')
+  watchEffect(() => {
+    selectedItem.value = route.path
+  })
 
   const theme = useTheme()
 
@@ -60,3 +64,13 @@
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
   }
 </script>
+
+<style scoped>
+#navigation-drawer :deep(.navigation-item-title) {
+  font-size: 1rem;
+}
+
+.layout {
+  height: calc(100vh - 40px); /* 40px is the height of the footer bar */
+}
+</style>
